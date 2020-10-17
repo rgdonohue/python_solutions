@@ -19,7 +19,7 @@ try:
 except:
     e = sys.exc_info()[0]
     print(f'{bcolors.ERROR}Error: %s' % e)
-    sys.exit(f'{bcolors.FAIL}Shapefile not read. Exiting Script{bcolors.ENDC}')
+    sys.exit(f'{bcolors.FAIL}Shapefile not read. Exiting script.{bcolors.ENDC}')
 
 
 print(f'{bcolors.STATUS}Reading CRS/proejction info ...{bcolors.ENDC}') 
@@ -32,10 +32,10 @@ try:
 except:
     e = sys.exc_info()[0]
     print('Error: %s' % e)
-    sys.exit('Projection info not retrieved')
+    sys.exit(f'{bcolors.FAIL}Projection info not retrieved. Exiting script.{bcolors.ENDC}')
 
     
-print('transforming current dataset to WGS84')
+print(f'{bcolors.STATUS}Transforming current dataset to WGS84{bcolors.ENDC}')
 # define current CRS
 df_stormwater.crs = wkt_def
 
@@ -43,9 +43,17 @@ df_stormwater.crs = wkt_def
 df_stormwater_wgs84 = df_stormwater.to_crs("EPSG:4326")
 
 # write output to GeoJSON file (will overwrite GeoJSON)
-print('writing new dataset to GeoJSON')
-df_stormwater_wgs84.to_file('./data/stormwater.json', driver='GeoJSON')
+print(f'{bcolors.STATUS}Writing new dataset to GeoJSON{bcolors.ENDC}')
 
+try:
+    df_stormwater_wgs84.to_file('./data/stormwater.json', driver='GeoJSON')
+    print(f'{bcolors.OKGREEN}Data successfully written as GeoJSON to disk.{bcolors.ENDC}')
+except:
+    e = sys.exc_info()[0]
+    print(f'{bcolors.ERROR}Error: %s' % e)
+    print(f'{bcolors.OKGREEN}Skipping GeoJSON output{bcolors.ENDC}')
+    
+    
 print(f'{bcolors.STATUS}Writing new dataset to Shapefile.{bcolors.ENDC}')
 
 # write output to shapefile
@@ -57,4 +65,4 @@ except FileExistsError:
 finally:
     os.mkdir('./data/stormwater_wgs84')
     df_stormwater_wgs84.to_file('./data/stormwater_wgs84/stormwater_wgs84.shp')
-    print(f'{bcolors.OKGREEN}Shapefile successfully written to disk.{bcolors.ENDC}')
+    print(f'{bcolors.OKGREEN}Shapefile directory and files successfully written to disk.{bcolors.ENDC}')
